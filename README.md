@@ -1,41 +1,37 @@
 # OSINT Intelligence Platform
 
-> **One target in. Intelligence graph out.**
+Masukkan satu target, dapatkan satu intelligence graph.
 
-Platform OSINT berbasis web yang menerima satu target (username, email, domain, IP,
-URL, organisasi, atau nomor telepon), lalu secara otomatis mengumpulkan informasi
-publik dari banyak sumber, menormalisasinya, dan menghubungkannya menjadi satu
-**intelligence graph** yang berbukti, bisa ditelusuri, dan bisa diekspor sebagai laporan.
+Ini platform OSINT berbasis web. Kamu kasih satu target (username, email, domain, IP, URL, organisasi, atau nomor telepon), lalu platform mengumpulkan informasi publik tentang target itu dari banyak sumber, merapikan formatnya, dan menyambungkan semuanya jadi satu graph. Setiap data di graph punya bukti asalnya, bisa ditelusuri, dan bisa diekspor jadi laporan.
 
-Dokumen PRD lengkap: lihat *PRD — OSINT Intelligence Platform* (Claude Docs).
+Detail lengkapnya ada di [docs/PRD.md](docs/PRD.md).
 
----
+## Pakai dengan bertanggung jawab
 
-## ⚠️ Penggunaan yang bertanggung jawab
+Alat ini hanya untuk tujuan yang sah dan dengan izin yang diperlukan: riset threat intelligence, due diligence dari sumber publik, recon pada scope yang sudah diizinkan klien, dan belajar.
 
-Alat ini hanya untuk **tujuan sah** dan **dengan izin yang diperlukan**:
-riset threat intelligence, due diligence berbasis sumber publik, recon pada scope
-yang sudah diizinkan klien, serta edukasi.
+Jangan pakai untuk stalking, doxxing, melecehkan atau menyakiti orang, mengakses data bocor atau curian, atau recon tanpa izin. Setiap user wajib menyetujui *Acceptable Use Policy* dan mematuhi UU PDP (UU No. 27/2022), GDPR kalau relevan, serta Terms of Service tiap sumber data. Semua tindakan tercatat di audit log.
 
-**Dilarang** dipakai untuk stalking, doxxing, melecehkan atau menyakiti individu,
-mengakses data yang bocor/dicuri secara tidak sah, atau recon tanpa izin.
-Pengguna wajib menyetujui *Acceptable Use Policy* dan mematuhi UU PDP (UU No. 27/2022),
-GDPR bila relevan, serta Terms of Service tiap sumber data. Setiap tindakan tercatat
-di audit log.
+## Dokumentasi
 
----
+| Dokumen | Isi |
+| --- | --- |
+| [docs/PRD.md](docs/PRD.md) | Kebutuhan produk: tujuan, fitur, data model, keamanan, roadmap |
+| [docs/setup.md](docs/setup.md) | Menyiapkan lingkungan development dan menjalankan service |
+| [docs/contributing.md](docs/contributing.md) | Alur kerja: branch, commit, pull request |
+| [docs/commit-guide.md](docs/commit-guide.md) | Format commit dan cara pakai `npm run commit` |
 
-## Fitur (MVP)
+## Fitur MVP
 
-- **One-click investigation** — masukkan target, collector relevan dipilih & dijalankan otomatis.
-- **Intelligence graph** — node (entity) & edge (relationship) interaktif: zoom, expand, filter, isolate, shortest path.
-- **Evidence & provenance** — setiap data punya sumber, collector, timestamp, dan bukti mentah (append-only).
-- **Confidence system** — HIGH / MEDIUM / LOW / UNKNOWN per entity dan relationship.
-- **Search, timeline, evidence view** — telusuri investigasi lintas waktu & tipe.
-- **Job system + real-time updates** — collector berjalan di latar, status via WebSocket/SSE.
-- **Report export** — PDF, HTML, Markdown, JSON, CSV.
-- **Scope & limit** — `max_depth`, `max_entities`, `max_runtime` agar discovery tidak liar.
-- **Audit log + autentikasi** — Argon2id, sesi aman, 2FA opsional.
+- One-click investigation. Masukkan target, dan platform memilih serta menjalankan collector yang cocok.
+- Intelligence graph interaktif berisi node (entity) dan edge (relationship). Bisa zoom, expand, filter, isolate, dan cari shortest path.
+- Evidence dan provenance. Setiap data menyimpan sumber, collector, timestamp, dan bukti mentahnya (append-only).
+- Confidence HIGH / MEDIUM / LOW / UNKNOWN untuk tiap entity dan relationship.
+- Search, timeline, dan evidence view untuk menelusuri investigasi dari waktu ke waktu.
+- Job system dengan update real-time. Collector jalan di belakang, statusnya dikirim lewat WebSocket/SSE.
+- Ekspor laporan ke PDF, HTML, Markdown, JSON, dan CSV.
+- Scope dan limit (`max_depth`, `max_entities`, `max_runtime`) supaya discovery tidak liar.
+- Audit log dan autentikasi: Argon2id, sesi aman, 2FA opsional.
 
 ### Collector inti MVP
 
@@ -47,8 +43,6 @@ di audit log.
 | HTTP metadata | domain, URL | title, header, teknologi |
 | Username | username | keberadaan profil publik |
 | GitHub | username, org | repo, org, email commit, domain |
-
----
 
 ## Arsitektur
 
@@ -69,9 +63,7 @@ FastAPI ─────────────┬──────────
           Collectors (sandbox/container terisolasi)
 ```
 
-Pipeline: `TARGET → DISCOVERY → COLLECTION → NORMALIZATION → CORRELATION → GRAPH → ANALYSIS → REPORT`.
-
----
+Alurnya: `TARGET → DISCOVERY → COLLECTION → NORMALIZATION → CORRELATION → GRAPH → ANALYSIS → REPORT`.
 
 ## Tech stack
 
@@ -88,26 +80,25 @@ Pipeline: `TARGET → DISCOVERY → COLLECTION → NORMALIZATION → CORRELATION
 | Container | Docker |
 | Auth | Session / JWT |
 
----
+## Mulai development
 
-## Mulai (rencana)
+Pasang dulu prasyaratnya (git, Python, Node.js, Docker, tool commit) pakai script di folder `setup/`. Caranya ada di [docs/setup.md](docs/setup.md).
 
-> Catatan: ini kerangka yang diharapkan saat implementasi dimulai; sesuaikan dengan repo nyata.
+Setelah itu:
 
 ```bash
-# 1. Salin konfigurasi
+# 1. Salin konfigurasi, lalu ganti password dan isi SECRET_KEY, GITHUB_TOKEN, dll.
 cp .env.example .env
-#    isi: SECRET_KEY, DATABASE_URL, REDIS_URL, GITHUB_TOKEN, dll.
 
-# 2. Jalankan seluruh stack
+# 2. Jalankan PostgreSQL, Redis, dan MinIO
 docker compose up -d
-
-# 3. Buka
-#    Frontend : https://localhost
-#    API docs : https://localhost/api/docs
 ```
 
+Saat ini `docker-compose.yml` baru berisi infrastrukturnya. API, worker, frontend, dan reverse proxy akan ditambahkan begitu kodenya ada.
+
 ### Variabel lingkungan utama
+
+Daftar lengkapnya ada di `.env.example`.
 
 | Variabel | Fungsi |
 | --- | --- |
@@ -116,8 +107,6 @@ docker compose up -d
 | `REDIS_URL` | Koneksi Redis (job queue) |
 | `GITHUB_TOKEN` | Token API GitHub (hormati rate limit) |
 | `MAX_DEPTH` / `MAX_ENTITIES` / `MAX_RUNTIME` | Limit discovery default |
-
----
 
 ## API (ringkas)
 
@@ -134,9 +123,7 @@ GET    /api/collectors
 POST   /api/reports
 ```
 
----
-
-## Scope control (contoh)
+## Contoh scope
 
 ```yaml
 scope:
@@ -149,12 +136,9 @@ limits:
   max_runtime: 10m
 ```
 
----
-
 ## Menulis collector baru
 
-Setiap collector adalah plugin dengan interface standar: menerima input, mengembalikan
-hasil ternormalisasi.
+Setiap collector adalah plugin dengan interface standar. Collector menerima input dan mengembalikan hasil yang sudah dinormalisasi, seperti ini:
 
 ```json
 {
@@ -170,21 +154,15 @@ hasil ternormalisasi.
 }
 ```
 
-Letakkan di `collectors/<nama>/`. **Setiap collector baru wajib lolos review ToS/legal**
-sebelum diaktifkan.
-
----
+Taruh collector di `collectors/<nama>/`. Sebelum diaktifkan, setiap collector baru harus lolos review ToS dan legal.
 
 ## Roadmap
 
-- **v1.0 (MVP)** — 6 collector inti, graph, evidence, report, scope, audit.
-- **v1.1** — lebih banyak collector, advanced search, scheduled investigations.
-- **v1.2** — correlation engine, entity similarity, automated discovery, risk scoring.
-- **v2.0** — multi-user, kolaborasi tim, CLI, Python SDK, marketplace collector.
-
----
+- v1.0 (MVP): 6 collector inti, graph, evidence, report, scope, audit.
+- v1.1: lebih banyak collector, advanced search, scheduled investigations.
+- v1.2: correlation engine, entity similarity, automated discovery, risk scoring.
+- v2.0: multi-user, kolaborasi tim, CLI, Python SDK, marketplace collector.
 
 ## Lisensi
 
-Tentukan sebelum rilis (mis. MIT/Apache-2.0). Pastikan lisensi selaras dengan
-kebijakan sumber data dan penggunaan yang bertanggung jawab di atas.
+[MIT](LICENSE). Lisensi kode tidak mengubah aturan pemakaian di atas: kamu tetap wajib mematuhi hukum dan Terms of Service tiap sumber data.
