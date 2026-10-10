@@ -10,14 +10,12 @@ if ! command -v brew >/dev/null; then
   eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv)"
 fi
 
-brew install git python node pipx
+brew install git python node
 brew install --cask docker
 open -a Docker
 
-# Commitizen: `cz commit` for guided messages, hook rejects non-conventional ones.
-pipx install commitizen
-pipx ensurepath
-git config core.hooksPath .githooks
+# Commit tooling: `npm run commit` (czg) + commitlint hook via husky (`prepare` script).
+npm install
 
 [ -f .env.example ] && [ ! -f .env ] && cp .env.example .env && echo "Created .env from .env.example. Fill in the secrets."
 

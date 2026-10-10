@@ -1,4 +1,0 @@
-#!/bin/sh
-# Reject commits that don't follow Conventional Commits.
-command -v cz >/dev/null || { echo "commitizen not found: run setup/ script or 'pipx install commitizen'" >&2; exit 1; }
-exec cz check --allow-abort --commit-msg-file "$1"
